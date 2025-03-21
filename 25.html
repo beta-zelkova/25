@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>打撃成績</title>
+    <style>
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+        th { background-color: #f4f4f4; }
+    </style>
+</head>
+<body>
+    <h2>打撃成績</h2>
+    <table id="battingTable">
+        <thead>
+            <tr id="tableHeader"></tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+    </table>
+    
+    <script>
+        async function loadBattingData() {
+            const response = await fetch('batting_data.json'); // JSONデータを取得
+            const data = await response.json();
+            
+            const tableHeader = document.getElementById('tableHeader');
+            const tableBody = document.getElementById('tableBody');
+            
+            // ヘッダーを作成
+            const headers = Object.keys(data[0]);
+            headers.forEach(header => {
+                let th = document.createElement('th');
+                th.textContent = header;
+                tableHeader.appendChild(th);
+            });
+            
+            // データをテーブルに追加
+            data.forEach(row => {
+                let tr = document.createElement('tr');
+                headers.forEach(header => {
+                    let td = document.createElement('td');
+                    td.textContent = row[header];
+                    tr.appendChild(td);
+                });
+                tableBody.appendChild(tr);
+            });
+        }
+        
+        loadBattingData();
+    </script>
+</body>
+</html>
