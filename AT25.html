@@ -9,39 +9,43 @@
         table { margin: auto; border-collapse: collapse; width: 60%; }
         th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
         th { background-color: #f4f4f4; }
+        button { margin: 10px; padding: 10px; font-size: 16px; cursor: pointer; }
     </style>
 </head>
 <body>
     <h2>安部剛の詳細成績</h2>
+    <button onclick="loadBattingData()">データを更新</button>
     <table>
         <tbody id="statsTable"></tbody>
     </table>
     
     <script>
-        const data = {
-            "出場": 2, "打席": 5, "打数": 5, "安打": 3,
-            "四球": 0, "死球": 0, "盗塁": 0, "打点": 3,
-            "得点": 0, "犠打": 0, "本塁打": 0, "三振": 0,
-            "打率": "0.600", "出塁率": "0.600", "長打率": "0.800", "OPS": "1.400",
-            "失策": 0, "刺殺": 2, "補殺": 1, "守備率": "100%",
-            "単打": 2, "二塁打": 1, "三塁打": 0, "塁打数": 4,
-            "併殺": 0, "球数": 19, "P/B": "3.8", "見逃し": "21%",
-            "空振り": "0%", "ファール": "16%", "ボール": "37%", "残塁": 3
-        };
-
-        const table = document.getElementById("statsTable");
-        const keys = Object.keys(data);
-        for (let i = 0; i < keys.length; i += 4) {
-            let row = document.createElement("tr");
-            for (let j = i; j < i + 4 && j < keys.length; j++) {
-                let th = document.createElement("th");
-                let td = document.createElement("td");
-                th.textContent = keys[j];
-                td.textContent = data[keys[j]];
-                row.appendChild(th);
-                row.appendChild(td);
+        async function loadBattingData() {
+            const response = await fetch('DETAIL_DATA.json');
+            const data = await response.json();
+            const playerData = data.find(player => player["打者"] === "安部剛");
+            if (playerData) {
+                delete playerData["打者"]; // 名前を削除
+                renderTable(playerData);
             }
-            table.appendChild(row);
+        }
+
+        function renderTable(data) {
+            const table = document.getElementById("statsTable");
+            table.innerHTML = "";
+            const keys = Object.keys(data);
+            for (let i = 0; i < 8; i++) {
+                let row = document.createElement("tr");
+                for (let j = i; j < keys.length; j += 8) {
+                    let th = document.createElement("th");
+                    let td = document.createElement("td");
+                    th.textContent = keys[j];
+                    td.textContent = data[keys[j]];
+                    row.appendChild(th);
+                    row.appendChild(td);
+                }
+                table.appendChild(row);
+            }
         }
     </script>
 </body>
