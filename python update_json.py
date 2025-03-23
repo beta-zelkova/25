@@ -4,7 +4,7 @@ import json
 # ファイルパス
 file_path = "成績表.xlsx"
 
-# Excelファイルを読み込む
+# Excelファイルを読み込む（すべての値を文字列として扱う）
 xls = pd.ExcelFile(file_path)
 df_batting = pd.read_excel(xls, sheet_name="打撃", dtype=str)
 df_batting_details = pd.read_excel(xls, sheet_name="打撃詳細", dtype=str)
@@ -17,9 +17,8 @@ ranking_df = df_batting_details[df_batting_details["打者"] != "全体"].copy()
 
 # 順位付け処理
 def rank_column(df, column):
-    df[column] = df[column].astype(float)
-    df["rank"] = df[column].rank(method="min", ascending=False).astype(int)
-    df[column] = df[column].astype(str) + " (" + df["rank"].astype(str) + ")"
+    df["rank"] = df[column].astype(float).rank(method="min", ascending=False).astype(int)
+    df[column] = df[column] + " (" + df["rank"].astype(str) + ")"
     df.drop(columns=["rank"], inplace=True)
     return df
 
@@ -29,7 +28,7 @@ for col in rank_columns:
 # 元データに反映
 df_batting_details.update(ranking_df)
 
-# DataFrameをJSONに変換
+# DataFrameをJSONに変換（数値を文字列として維持）
 batting_json = df_batting.to_dict(orient="records")
 batting_details_json = df_batting_details.to_dict(orient="records")
 
