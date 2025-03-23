@@ -57,7 +57,15 @@
                 let tr = document.createElement('tr');
                 headers.forEach(header => {
                     let td = document.createElement('td');
-                    td.textContent = row[header];
+                    if (header === '選手名') { // 「選手名」列にリンクを追加
+                        const playerLink = document.createElement('a');
+                        playerLink.href = 'https://beta-zelkova.github.io/25/AT25.html'; // リンク先
+                        playerLink.textContent = row[header]; // 選手名をリンクテキストに
+                        playerLink.target = '_blank'; // 新しいタブで開く
+                        td.appendChild(playerLink);
+                    } else {
+                        td.textContent = row[header];
+                    }
                     tr.appendChild(td);
                 });
                 tableBody.appendChild(tr);
