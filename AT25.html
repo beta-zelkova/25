@@ -4,6 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>安部剛の成績</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            flex-direction: column;
+        }
+        table {
+            border-collapse: collapse;
+            width: 80%;
+            max-width: 600px;
+            margin: 20px auto;
+        }
+        th, td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: center;
+        }
+        @media (max-width: 600px) {
+            table {
+                width: 100%;
+            }
+        }
+    </style>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             fetch('DETAIL_DATA.json')
@@ -13,7 +39,7 @@
                     if (player) {
                         delete player["打者"]; // 打者の名前を削除
                         const stats = Object.entries(player);
-                        let tableHTML = "<table border='1'><tr><th colspan='4'>安部剛の成績</th></tr>";
+                        let tableHTML = "<table><tr><th colspan='4'>安部剛の成績</th></tr>";
                         
                         for (let i = 0; i < stats.length; i += 2) {
                             tableHTML += "<tr>";
