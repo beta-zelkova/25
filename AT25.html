@@ -9,12 +9,10 @@
         table { margin: auto; border-collapse: collapse; width: 60%; }
         th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
         th { background-color: #f4f4f4; }
-        button { margin: 10px; padding: 10px; font-size: 16px; cursor: pointer; }
     </style>
 </head>
 <body>
-    <h2>安部剛章の詳細成績</h2>
-    <button onclick="loadBattingData()">データを更新</button>
+    <h2>安部剛の詳細成績</h2>
     <table>
         <tbody id="statsTable"></tbody>
     </table>
@@ -34,9 +32,9 @@
             const table = document.getElementById("statsTable");
             table.innerHTML = "";
             const keys = Object.keys(data);
-            for (let i = 0; i < 8; i++) {
+            for (let i = 0; i < 4; i++) {
                 let row = document.createElement("tr");
-                for (let j = i; j < keys.length; j += 8) {
+                for (let j = i; j < keys.length; j += 4) {
                     let th = document.createElement("th");
                     let td = document.createElement("td");
                     th.textContent = keys[j];
@@ -47,6 +45,8 @@
                 table.appendChild(row);
             }
         }
+
+        loadBattingData();
     </script>
 </body>
 </html>
