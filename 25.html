@@ -15,7 +15,7 @@
     </style>
 </head>
 <body>
-    <h2>25年度ソフト部打撃成績</h2>
+    <h2>25年度打撃成績</h2>
     <div class="table-container">
         <table id="battingTable">
             <thead>
@@ -57,10 +57,10 @@
                 let tr = document.createElement('tr');
                 headers.forEach(header => {
                     let td = document.createElement('td');
-                    if (header === '選手名' && row[header].trim() === '安部剛') { // 「安部剛」だけリンクを追加
+                    if (header === 'ID' && row[header] === 5) { // IDが5の場合にリンクを追加
                         const playerLink = document.createElement('a');
                         playerLink.href = 'https://beta-zelkova.github.io/25/AT25.html'; // リンク先
-                        playerLink.textContent = row[header]; // 選手名をリンクテキストに
+                        playerLink.textContent = row['選手名']; // 選手名をリンクテキストに
                         playerLink.target = '_blank'; // 新しいタブで開く
                         td.appendChild(playerLink);
                     } else {
