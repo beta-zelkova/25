@@ -37,15 +37,16 @@
     </style>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            fetch('DETAIL_DATA.json') // DETAIL_DATA.json を読み込む
+            fetch('DETAIL_DATA.json') // JSONを読み込む
                 .then(response => response.json())
                 .then(data => {
-                    const player = data.find(player => player["打者"] === "安部剛");
+                    const playerName = "安部剛";
+                    const player = data.find(p => p["打者"] === playerName);
                     if (player) {
-                        delete player["打者"]; // 打者名を削除
+                        delete player["打者"];
                         const stats = Object.entries(player);
-                        let tableHTML = `<table><tr><th colspan="4">安部剛の成績</th></tr>`;
-
+                        let tableHTML = `<table><tr><th colspan="4">${playerName}の成績</th></tr>`;
+                        
                         for (let i = 0; i < stats.length; i += 4) {
                             tableHTML += "<tr>";
                             for (let j = 0; j < 4; j++) {
@@ -54,7 +55,7 @@
                                     let value = stats[i + j][1];
                                     tableHTML += `<td>${key}</td><td>${value}</td>`;
                                 } else {
-                                    tableHTML += `<td></td><td></td>`; // 空欄の処理
+                                    tableHTML += `<td></td><td></td>`;
                                 }
                             }
                             tableHTML += "</tr>";
