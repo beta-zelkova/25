@@ -11,23 +11,20 @@
                 .then(data => {
                     const player = data.find(player => player["打者"] === "安部剛");
                     if (player) {
-                        const stats = [
-                            ["出場", player["出場"], "打席", player["打席"]],
-                            ["打数", player["打数"], "安打", player["安打"]],
-                            ["四球", player["四球"], "死球", player["死球"]],
-                            ["盗塁", player["盗塁"], "打点", player["打点"]],
-                            ["打率", player["打率"], "出塁率", player["出塁率"]],
-                            ["長打率", player["長打率"], "OPS", player["OPS"]],
-                            ["単打", player["単打"], "二塁打", player["二塁打"]],
-                            ["三塁打", player["三塁打"], "塁打数", player["塁打数"]]
-                        ];
-                        
+                        const stats = Object.entries(player);
                         let tableHTML = "<table border='1'><tr><th colspan='4'>安部剛の成績</th></tr>";
-                        stats.forEach(row => {
-                            tableHTML += `<tr><td>${row[0]}</td><td>${row[1]}</td><td>${row[2]}</td><td>${row[3]}</td></tr>`;
-                        });
+                        
+                        for (let i = 0; i < stats.length; i += 4) {
+                            tableHTML += "<tr>";
+                            for (let j = 0; j < 4; j++) {
+                                if (i + j < stats.length) {
+                                    tableHTML += `<td>${stats[i + j][0]}</td><td>${stats[i + j][1]}</td>`;
+                                }
+                            }
+                            tableHTML += "</tr>";
+                        }
+                        
                         tableHTML += "</table>";
-
                         document.getElementById("stats").innerHTML = tableHTML;
                     } else {
                         document.getElementById("stats").innerHTML = "<p>データが見つかりません</p>";
