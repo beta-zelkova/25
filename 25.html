@@ -7,15 +7,11 @@
     <style>
         body { margin: 0; padding: 0; }
         table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: center; cursor: pointer; }
         th { background-color: #f4f4f4; }
-
-        /* 横画面での調整 */
-        @media screen and (max-width: 768px) and (orientation: landscape) {
-            body { font-size: 14px; }
-            table { width: auto; min-width: 100%; }
-            .table-container { overflow-x: auto; white-space: nowrap; }
-        }
+        th.sortable:hover { background-color: #ddd; }
+        .asc::after { content: " \25B2"; } /* ▲ */
+        .desc::after { content: " \25BC"; } /* ▼ */
     </style>
 </head>
 <body>
@@ -30,22 +26,33 @@
     </div>
 
     <script>
+        let battingData = [];
+        let sortDirection = {}; // ソート状態を記録
+
         async function loadBattingData() {
             const response = await fetch('batting_data.json');
-            const data = await response.json();
-            
+            battingData = await response.json();
+            renderTable(battingData);
+        }
+
+        function renderTable(data) {
             const tableHeader = document.getElementById('tableHeader');
             const tableBody = document.getElementById('tableBody');
-
-            // ヘッダーを作成
+            tableHeader.innerHTML = "";
+            tableBody.innerHTML = "";
+            
             const headers = Object.keys(data[0]);
             headers.forEach(header => {
                 let th = document.createElement('th');
                 th.textContent = header;
+                th.classList.add('sortable');
+                th.onclick = () => sortTable(header);
+                if (sortDirection[header]) {
+                    th.classList.add(sortDirection[header]);
+                }
                 tableHeader.appendChild(th);
             });
-
-            // データをテーブルに追加
+            
             data.forEach(row => {
                 let tr = document.createElement('tr');
                 headers.forEach(header => {
@@ -55,6 +62,23 @@
                 });
                 tableBody.appendChild(tr);
             });
+        }
+
+        function sortTable(column) {
+            const isNumeric = !isNaN(parseFloat(battingData[0][column]));
+            const direction = sortDirection[column] === 'asc' ? 'desc' : 'asc';
+            
+            battingData.sort((a, b) => {
+                let valA = isNumeric ? parseFloat(a[column]) : a[column];
+                let valB = isNumeric ? parseFloat(b[column]) : b[column];
+                if (valA < valB) return direction === 'asc' ? -1 : 1;
+                if (valA > valB) return direction === 'asc' ? 1 : -1;
+                return 0;
+            });
+            
+            sortDirection = {}; // すべてのソート状態をリセット
+            sortDirection[column] = direction;
+            renderTable(battingData);
         }
         
         loadBattingData();
