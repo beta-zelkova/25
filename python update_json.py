@@ -1,52 +1,46 @@
 import pandas as pd
+import json
 
-# ファイル名の設定
-EXCEL_FILE = "成績表.xlsx"
-JSON_FILE_DETAIL = "DETAIL_DATA.json"
-JSON_FILE = "batting_data.json"
+# ファイルパス
+file_path = "成績表.xlsx"
 
-# 丸数字リスト
-rank_symbols = ["①", "②", "③", "④", "⑤", "⑥", "⑦", "⑧", "⑨", "⑩"]
+# Excelファイルを読み込む
+xls = pd.ExcelFile(file_path)
+df_batting = pd.read_excel(xls, sheet_name="打撃", dtype=str)
+df_batting_details = pd.read_excel(xls, sheet_name="打撃詳細", dtype=str)
 
-def attach_ranking(df, column):
-    """ 指定した指標に丸数字で順位を付加し、小数点以下3桁を維持 """
-    if column not in df.columns:
-        print(f"警告: {column} がデータに存在しません")
-        return df  # 指標がなければスキップ
+# 順位付けが必要な指標
+rank_columns = ["打率", "出塁率", "OPS", "守備率", "安打", "盗塁", "本塁打", "打点"]
 
-    df[column] = pd.to_numeric(df[column], errors='coerce')  # 数値変換（エラー時 NaN）
-    df = df.sort_values(by=column, ascending=False, na_position='last').reset_index(drop=True)  # 降順ソート
-    df[f"{column}順位"] = [rank_symbols[i] if i < len(rank_symbols) else str(i+1) for i in range(len(df))]
+# 順位付けの対象者（全体を除外）
+ranking_df = df_batting_details[df_batting_details["打者"] != "全体"].copy()
 
-    # 小数点以下3桁を維持し、丸数字を追加（NaN の場合はそのまま）
-    df[column] = df.apply(lambda row: f"{row[column]:.3f}{row[f'{column}順位']}" if pd.notna(row[column]) else "-", axis=1)
-
-    df.drop(columns=[f"{column}順位"], inplace=True)  # 不要な順位カラム削除
+# 順位付け処理
+def rank_column(df, column):
+    df[column] = df[column].astype(float)
+    df["rank"] = df[column].rank(method="min", ascending=False).astype(int)
+    df[column] = df[column].astype(str) + " (" + df["rank"].astype(str) + ")"
+    df.drop(columns=["rank"], inplace=True)
     return df
 
-def update_json():
-    try:
-        # Excel のデータを読み込む
-        df2 = pd.read_excel(EXCEL_FILE, sheet_name="打撃詳細")
-        df3 = pd.read_excel(EXCEL_FILE, sheet_name="打撃")
+for col in rank_columns:
+    ranking_df = rank_column(ranking_df, col)
 
+# 元データに反映
+df_batting_details.update(ranking_df)
 
-        # 順位を付加する指標
-        ranking_metrics = ["打率", "出塁率", "OPS"]
+# DataFrameをJSONに変換
+batting_json = df_batting.to_dict(orient="records")
+batting_details_json = df_batting_details.to_dict(orient="records")
 
-        # 各指標の処理
-        for metric in ranking_metrics:
-            df2 = attach_ranking(df2, metric)
+# JSONファイルとして保存
+batting_json_path = "batting_data.json"
+batting_details_json_path = "DETAIL_DATA.json"
 
-        # JSON, CSV 出力（force_ascii=False で日本語を維持）
-        df2.to_json(JSON_FILE_DETAIL, orient="records", force_ascii=False, indent=4)
-        df3.to_json(JSON_FILE, orient="records", force_ascii=False, indent=4)
+with open(batting_json_path, "w", encoding="utf-8") as f:
+    json.dump(batting_json, f, ensure_ascii=False, indent=4)
 
-        print("DETAIL_DATA.json を更新しました。")
+with open(batting_details_json_path, "w", encoding="utf-8") as f:
+    json.dump(batting_details_json, f, ensure_ascii=False, indent=4)
 
-    except Exception as e:
-        print(f"エラー発生: {e}")
-
-if __name__ == "__main__":
-    update_json()
-
+print(f"JSONファイルを保存しました: {batting_json_path}, {batting_details_json_path}")
