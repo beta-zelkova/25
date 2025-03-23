@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>打撃成績</title>
+    <style>
+        body { margin: 0; padding: 0; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+        th { background-color: #f4f4f4; }
+
+        /* 横画面での調整 */
+        @media screen and (max-width: 768px) and (orientation: landscape) {
+            body { font-size: 14px; }
+            table { width: auto; min-width: 100%; }
+            .table-container { overflow-x: auto; white-space: nowrap; }
+        }
+    </style>
+</head>
