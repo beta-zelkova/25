@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>萩原の成績</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            max-width: 600px;
+            margin: 20px auto;
+            font-size: 1em;
+        }
+        th, td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: center;
+            white-space: nowrap; /* セル内で改行しない */
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        @media (max-width: 600px) {
+            table {
+                width: 100%;
+                font-size: 0.8em;
+            }
+        }
+    </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            fetch('DETAIL_DATA.json') // JSONを読み込む
+                .then(response => response.json())
+                .then(data => {
+                    const playerName = "萩原";
+                    const player = data.find(p => p["打者"] === playerName);
+                    if (player) {
+                        delete player["打者"];
+                        const stats = Object.entries(player);
+                        let tableHTML = `<table><tr><th colspan="4">${playerName}の成績</th></tr>`;
+                        
+                        for (let i = 0; i < stats.length; i += 4) {
+                            tableHTML += "<tr>";
+                            for (let j = 0; j < 4; j++) {
+                                if (i + j < stats.length) {
+                                    let key = stats[i + j][0];
+                                    let value = stats[i + j][1];
+                                    tableHTML += `<td>${key}</td><td>${value}</td>`;
+                                } else {
+                                    tableHTML += `<td></td><td></td>`;
+                                }
+                            }
+                            tableHTML += "</tr>";
+                        }
+
+                        tableHTML += `</table>`;
+                        document.getElementById("stats").innerHTML = tableHTML;
+                    } else {
+                        document.getElementById("stats").innerHTML = "<p>データが見つかりません</p>";
+                    }
+                })
+                .catch(error => console.error("データの読み込みに失敗しました", error));
+        });
+    </script>
+</head>
+<body>
+    <h1>萩原郁将の成績</h1>
+    <div id="stats"></div>
+</body>
+</html>
