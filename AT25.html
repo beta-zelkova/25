@@ -17,7 +17,7 @@
         }
         table {
             border-collapse: collapse;
-            width: 80%;
+            width: 100%;
             max-width: 600px;
             margin: 20px auto;
         }
@@ -46,9 +46,9 @@
                         const stats = Object.entries(player);
                         let tableHTML = `<table><tr><th colspan="4">安部剛の成績</th></tr>`;
 
-                        for (let i = 0; i < stats.length; i += 2) {
+                        for (let i = 0; i < stats.length; i += 4) {
                             tableHTML += "<tr>";
-                            for (let j = 0; j < 2; j++) {
+                            for (let j = 0; j < 4; j++) {
                                 if (i + j < stats.length) {
                                     let key = stats[i + j][0];
                                     let value = stats[i + j][1];
