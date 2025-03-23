@@ -30,9 +30,6 @@ def update_json():
         df2 = pd.read_excel(EXCEL_FILE, sheet_name="打撃詳細")
         df = pd.read_excel(EXCEL_FILE, sheet_name="打撃")
 
-        # 確認用: 読み込んだデータのカラム一覧を表示
-        print("読み込んだカラム:", df2.columns.tolist())
-
         # 順位を付加する指標
         ranking_metrics = ["打率", "出塁率", "OPS"]
 
