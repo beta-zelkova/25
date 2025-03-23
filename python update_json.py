@@ -28,7 +28,7 @@ def update_json():
     try:
         # Excel のデータを読み込む
         df2 = pd.read_excel(EXCEL_FILE, sheet_name="打撃詳細")
-        df = pd.read_excel(EXCEL_FILE, sheet_name="打撃")
+        df3 = pd.read_excel(EXCEL_FILE, sheet_name="打撃")
 
 
         # 順位を付加する指標
@@ -40,7 +40,7 @@ def update_json():
 
         # JSON, CSV 出力（force_ascii=False で日本語を維持）
         df2.to_json(JSON_FILE_DETAIL, orient="records", force_ascii=False, indent=4)
-        df.to_json(JSON_FILE, orient="records", force_ascii=False, indent=4)
+        df3.to_json(JSON_FILE, orient="records", force_ascii=False, indent=4)
 
         print("DETAIL_DATA.json を更新しました。")
 
