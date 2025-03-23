@@ -19,3 +19,23 @@ def update_json():
 
 if __name__ == "__main__":
     update_json()
+
+
+import pandas as pd
+
+# 丸数字を用意
+rank_symbols = ["①", "②", "③", "④", "⑤", "⑥", "⑦", "⑧", "⑨", "⑩"]
+
+# JSON ファイルの読み込み
+df = pd.read_json("batting_data.json")
+
+# 順位を計算する指標を指定
+ranking_metrics = ["打率", "出塁率", "OPS"]
+
+for metric in ranking_metrics:
+    df[metric] = pd.to_numeric(df[metric], errors='coerce')  # 数値変換
+    df = df.sort_values(by=metric, ascending=False).reset_index(drop=True)
+    df[f"{metric}順位"] = [rank_symbols[i] if i < len(rank_symbols) else str(i+1) for i in range(len(df))]
+
+# JSONに出力
+df.to_json("batting_data.json", orient="records", force_ascii=False, indent=4)
