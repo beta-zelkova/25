@@ -11,12 +11,13 @@
                 .then(data => {
                     const player = data.find(player => player["打者"] === "安部剛");
                     if (player) {
+                        delete player["打者"]; // 打者の名前を削除
                         const stats = Object.entries(player);
                         let tableHTML = "<table border='1'><tr><th colspan='4'>安部剛の成績</th></tr>";
                         
-                        for (let i = 0; i < stats.length; i += 4) {
+                        for (let i = 0; i < stats.length; i += 2) {
                             tableHTML += "<tr>";
-                            for (let j = 0; j < 4; j++) {
+                            for (let j = 0; j < 2; j++) {
                                 if (i + j < stats.length) {
                                     tableHTML += `<td>${stats[i + j][0]}</td><td>${stats[i + j][1]}</td>`;
                                 }
