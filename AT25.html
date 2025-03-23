@@ -31,9 +31,9 @@
 
         const table = document.getElementById("statsTable");
         const keys = Object.keys(data);
-        for (let i = 0; i < keys.length; i += 8) {
+        for (let i = 0; i < keys.length; i += 4) {
             let row = document.createElement("tr");
-            for (let j = i; j < i + 8 && j < keys.length; j++) {
+            for (let j = i; j < i + 4 && j < keys.length; j++) {
                 let th = document.createElement("th");
                 let td = document.createElement("td");
                 th.textContent = keys[j];
