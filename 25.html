@@ -82,8 +82,8 @@
             battingData.sort((a, b) => {
                 let valA = isNumeric ? parseFloat(a[column]) : a[column];
                 let valB = isNumeric ? parseFloat(b[column]) : b[column];
-                if (valA < valB) return direction === 'asc' ? -1 : 1;
-                if (valA > valB) return direction === 'asc' ? 1 : -1;
+                if (valA < valB) return direction === 'desc' ? -1 : 1;
+                if (valA > valB) return direction === 'desc' ? 1 : -1;
                 return 0;
             });
             
