@@ -3,18 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>打撃成績</title>
+    <title>安部滉人さんの成績</title>
     <style>
-        body { margin: 0; padding: 0; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
-        th { background-color: #f4f4f4; }
-
-        /* 横画面での調整 */
-        @media screen and (max-width: 768px) and (orientation: landscape) {
-            body { font-size: 14px; }
-            table { width: auto; min-width: 100%; }
-            .table-container { overflow-x: auto; white-space: nowrap; }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        h1 {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .table-container {
+            width: 100%;
+            overflow-x: auto; /* 横スクロール可能に */
+            max-width: 100%;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            font-size: 1em;
+        }
+        th, td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: center;
+        }
+        @media (max-width: 600px) {
+            table {
+                font-size: 0.9em;
+                width: 100%;
+            }
+            th, td {
+                padding: 6px;
+            }
         }
     </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            fetch('DETAIL_DATA.json')
+                .then(response => response.json())
+                .then(data => {
+                    const playerName = "安部滉";
+                    const player = data.find(p => p["打者"] === playerName);
+                    if (player) {
+                        delete player["打者"];
+                        const stats = Object.entries(player);
+                        let tableHTML = `<table><tr><th colspan="4">${playerName}の成績</th></tr>`;
+                        
+                        for (let i = 0; i < stats.length; i += 4) {
+                            tableHTML += "<tr>";
+                            for (let j = 0; j < 4; j++) {
+                                if (i + j < stats.length) {
+                                    let key = stats[i + j][0];
+                                    let value = stats[i + j][1];
+                                    tableHTML += `<td>${key}</td><td>${value}</td>`;
+                                } else {
+                                    tableHTML += `<td></td><td></td>`;
+                                }
+                            }
+                            tableHTML += "</tr>";
+                        }
+
+                        tableHTML += `</table>`;
+                        document.getElementById("stats").innerHTML = `<div class="table-container">${tableHTML}</div>`;
+                    } else {
+                        document.getElementById("stats").innerHTML = "<p>データが見つかりません</p>";
+                    }
+                })
+                .catch(error => console.error("データの読み込みに失敗しました", error));
+        });
+    </script>
 </head>
+<body>
+    <h1>安部滉人さんの成績</h1>
+    <div id="stats"></div>
+</body>
+</html>
