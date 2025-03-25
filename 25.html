@@ -57,24 +57,17 @@
                 let tr = document.createElement('tr');
                 headers.forEach(header => {
                     let td = document.createElement('td');
-                    if (header === '打者' && row[header] === '安部剛') { 
+                    const links = { "安部剛": "AT25.html", "萩原": "HI25.html" };
+                    if (header === '打者' && links[row[header]]) {
                         const playerLink = document.createElement('a');
-                        playerLink.href = 'https://beta-zelkova.github.io/25/AT25.html'; // リンク先
-                        playerLink.textContent = row[header]; // "安部剛" をリンクテキストに
-                        playerLink.target = '_blank'; // 新しいタブで開く
+                        playerLink.href = `https://beta-zelkova.github.io/25/${links[row[header]]}`;
+                        playerLink.textContent = row[header];
+                        playerLink.target = '_blank';
                         td.appendChild(playerLink);
-                    }
-                    if (header === '打者' && row[header] === '萩原') { 
-                        const playerLink = document.createElement('a');
-                        playerLink.href = 'https://beta-zelkova.github.io/25/HI25.html'; // リンク先
-                        playerLink.textContent = row[header]; // "安部剛" をリンクテキストに
-                        playerLink.target = '_blank'; // 新しいタブで開く
-                        td.appendChild(playerLink);
-                    }
-                    
-                    else {
-                    td.textContent = row[header]; // それ以外は普通に表示
-                    }
+                    } else {
+                        td.textContent = row[header]; // 上書きを防ぐため、この処理は else のみで実行
+                            }
+
 
                     tr.appendChild(td);
                 });
