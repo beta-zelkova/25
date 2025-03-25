@@ -15,7 +15,7 @@
     </style>
 </head>
 <body>
-    <h2>25年度打撃成績</h2>
+    <h2>2025年度打撃成績</h2>
     <div class="table-container">
         <table id="battingTable">
             <thead>
@@ -63,26 +63,16 @@
                         playerLink.textContent = row[header]; // "安部剛" をリンクテキストに
                         playerLink.target = '_blank'; // 新しいタブで開く
                         td.appendChild(playerLink);
-                    } else {
-                    td.textContent = row[header]; // それ以外は普通に表示
                     }
-
-                    tr.appendChild(td);
-                });
-                tableBody.appendChild(tr);
-            });
-
-            data.forEach(row => {
-                let tr = document.createElement('tr');
-                headers.forEach(header => {
-                    let td = document.createElement('td');
                     if (header === '打者' && row[header] === '萩原') { 
                         const playerLink = document.createElement('a');
                         playerLink.href = 'https://beta-zelkova.github.io/25/HI25.html'; // リンク先
                         playerLink.textContent = row[header]; // "安部剛" をリンクテキストに
                         playerLink.target = '_blank'; // 新しいタブで開く
                         td.appendChild(playerLink);
-                    } else {
+                    }
+                    
+                    else {
                     td.textContent = row[header]; // それ以外は普通に表示
                     }
 
