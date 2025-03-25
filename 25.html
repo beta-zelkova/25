@@ -71,6 +71,25 @@
                 });
                 tableBody.appendChild(tr);
             });
+
+            data.forEach(row => {
+                let tr = document.createElement('tr');
+                headers.forEach(header => {
+                    let td = document.createElement('td');
+                    if (header === '打者' && row[header] === '萩原') { 
+                        const playerLink = document.createElement('a');
+                        playerLink.href = 'https://beta-zelkova.github.io/25/HI25.html'; // リンク先
+                        playerLink.textContent = row[header]; // "安部剛" をリンクテキストに
+                        playerLink.target = '_blank'; // 新しいタブで開く
+                        td.appendChild(playerLink);
+                    } else {
+                    td.textContent = row[header]; // それ以外は普通に表示
+                    }
+
+                    tr.appendChild(td);
+                });
+                tableBody.appendChild(tr);
+            });
         }
 
         function sortTable(column) {
