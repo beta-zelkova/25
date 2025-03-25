@@ -15,35 +15,43 @@
             padding: 20px;
             box-sizing: border-box;
         }
+        h1 {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .table-container {
+            width: 100%;
+            overflow-x: auto; /* 横スクロール可能に */
+            max-width: 100%;
+        }
         table {
             border-collapse: collapse;
             width: 100%;
             max-width: 600px;
-            margin: 20px auto;
+            margin: 0 auto;
             font-size: 1em;
         }
         th, td {
             border: 1px solid #000;
             padding: 8px;
             text-align: center;
-            white-space: nowrap; /* セル内で改行しない */
-        }
-        h1 {
-            margin-bottom: 20px;
         }
         @media (max-width: 600px) {
             table {
+                font-size: 0.9em;
                 width: 100%;
-                font-size: 0.8em;
+            }
+            th, td {
+                padding: 6px;
             }
         }
     </style>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            fetch('DETAIL_DATA.json') // JSONを読み込む
+            fetch('DETAIL_DATA.json')
                 .then(response => response.json())
                 .then(data => {
-                    const playerName = "萩原";
+                    const playerName = "安部剛";
                     const player = data.find(p => p["打者"] === playerName);
                     if (player) {
                         delete player["打者"];
@@ -65,7 +73,7 @@
                         }
 
                         tableHTML += `</table>`;
-                        document.getElementById("stats").innerHTML = tableHTML;
+                        document.getElementById("stats").innerHTML = `<div class="table-container">${tableHTML}</div>`;
                     } else {
                         document.getElementById("stats").innerHTML = "<p>データが見つかりません</p>";
                     }
@@ -75,7 +83,7 @@
     </script>
 </head>
 <body>
-    <h1>萩原郁将の成績</h1>
+    <h1>萩原の成績</h1>
     <div id="stats"></div>
 </body>
 </html>
