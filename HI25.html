@@ -51,7 +51,7 @@
             fetch('DETAIL_DATA.json')
                 .then(response => response.json())
                 .then(data => {
-                    const playerName = "安部剛";
+                    const playerName = "萩原";
                     const player = data.find(p => p["打者"] === playerName);
                     if (player) {
                         delete player["打者"];
