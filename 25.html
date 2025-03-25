@@ -57,7 +57,7 @@
                 let tr = document.createElement('tr');
                 headers.forEach(header => {
                     let td = document.createElement('td');
-                    const links = { "安部剛": "AT25.html", "萩原": "HI25.html" };
+                    const links = { "安部滉":"AH25.html","中井":"NK25.html","安部剛": "AT25.html","大鐘":"OK25.html","北久保":"KC25.html", "萩原": "HI25.html" ,"岩本":"IK25.html","上小城":"KS25.html","反町":"SH25.html"};
                     if (header === '打者' && links[row[header]]) {
                         const playerLink = document.createElement('a');
                         playerLink.href = `https://beta-zelkova.github.io/25/${links[row[header]]}`;

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>萩原の成績</title>
+    <title>反町さんの成績</title>
     <style>
         body {
             display: flex;
@@ -51,7 +51,7 @@
             fetch('DETAIL_DATA.json')
                 .then(response => response.json())
                 .then(data => {
-                    const playerName = "萩原";
+                    const playerName = "反町";
                     const player = data.find(p => p["打者"] === playerName);
                     if (player) {
                         delete player["打者"];
@@ -83,7 +83,7 @@
     </script>
 </head>
 <body>
-    <h1>萩原さんの成績</h1>
+    <h1>反町さんの成績</h1>
     <div id="stats"></div>
 </body>
 </html>
