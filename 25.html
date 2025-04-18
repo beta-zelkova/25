@@ -5,13 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ソフト部成績</title>
     <style>
-        body { margin: 0; padding: 0; }
+        body { margin: 0; padding: 0; font-family: Arial, sans-serif; }
+        .table-container {
+            width: 100%;
+            max-height: 400px; /* 表の最大高さを設定 */
+            overflow-y: auto; /* 縦スクロールを有効化 */
+            border: 1px solid #ccc;
+        }
         table { width: 100%; border-collapse: collapse; }
         th, td { border: 1px solid #ccc; padding: 8px; text-align: center; cursor: pointer; }
         th { background-color: #f4f4f4; }
         th.sortable:hover { background-color: #ddd; }
         .asc::after { content: " \25B2"; } /* ▲ */
         .desc::after { content: " \25BC"; } /* ▼ */
+        .link-container {
+            margin: 20px 0;
+            text-align: center;
+        }
+        .link-container a {
+            text-decoration: none;
+            color: #007BFF;
+            font-weight: bold;
+        }
+        .link-container a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -23,6 +41,11 @@
             </thead>
             <tbody id="tableBody"></tbody>
         </table>
+    </div>
+
+    <!-- リンクを埋め込み -->
+    <div class="link-container">
+        <a href="https://beta-zelkova.github.io/25/ranking.html" target="_blank">ランキングページを見る</a>
     </div>
 
     <script>
@@ -65,10 +88,8 @@
                         playerLink.target = '_blank';
                         td.appendChild(playerLink);
                     } else {
-                        td.textContent = row[header]; // 上書きを防ぐため、この処理は else のみで実行
-                            }
-
-
+                        td.textContent = row[header];
+                    }
                     tr.appendChild(td);
                 });
                 tableBody.appendChild(tr);
