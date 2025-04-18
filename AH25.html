@@ -54,7 +54,7 @@
         fetch('DETAIL_DATA.json')
             .then(response => response.json())
             .then(data => {
-                const playerName = "安部滉人";
+                const playerName = "安部滉";
                 const player = data.find(p => p["打者"] === playerName);
                 if (player) {
                     delete player["打者"];
@@ -84,7 +84,7 @@
         fetch('at_bat_result.json')
             .then(response => response.json())
             .then(data => {
-                const rows = data.filter(entry => entry["選手名"] === "安部滉人");
+                const rows = data.filter(entry => entry["選手名"] === "安部滉");
                 if (rows.length === 0) {
                     document.getElementById("atbat-table").innerHTML = "<p>打席データが見つかりません</p>";
                     return;
