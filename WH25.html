@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>安部剛_打撃成績</title>
+    <title>渡辺ヘンリー_打撃成績</title>
     <style>
         body {
             display: flex;
@@ -67,7 +67,7 @@
             fetch('DETAIL_DATA.json')
                 .then(response => response.json())
                 .then(data => {
-                    const playerName = "安部剛";
+                    const playerName = "HENRY";
                     const player = data.find(p => p["打者"] === playerName);
                     if (player) {
                         delete player["打者"];
@@ -97,7 +97,7 @@
             fetch('at_bat_result.json')
                 .then(response => response.json())
                 .then(data => {
-                    const rows = data.filter(entry => entry["選手名"] === "安部剛");
+                    const rows = data.filter(entry => entry["選手名"] === "HENRY");
                     if (rows.length === 0) {
                         document.getElementById("atbat-table").innerHTML = "<p>打席データが見つかりません</p>";
                         return;
@@ -139,7 +139,7 @@
     </script>
 </head>
 <body>
-<h1>安部(剛)　2025年度打撃成績</h1>
+<h1>渡辺ヘンリー　2025年度打撃成績</h1>
 <div id="stats"></div>
 <div id="atbat-table"></div>
 
