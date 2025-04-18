@@ -13,8 +13,13 @@
             border: 1px solid #ccc;
         }
         table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid #ccc; padding: 8px; text-align: center; cursor: pointer; }
-        th { background-color: #f4f4f4; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+        th {
+            background-color: #f4f4f4;
+            position: sticky; /* ヘッダー行を固定 */
+            top: 0; /* 上部に固定 */
+            z-index: 1; /* ヘッダーを前面に表示 */
+        }
         th.sortable:hover { background-color: #ddd; }
         .asc::after { content: " \25B2"; } /* ▲ */
         .desc::after { content: " \25BC"; } /* ▼ */
