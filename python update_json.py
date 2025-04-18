@@ -1,4 +1,4 @@
-import pandas as pd
+import pandas as pd # type: ignore
 import json
 
 # ファイルパス
@@ -8,6 +8,11 @@ file_path = "成績表.xlsx"
 xls = pd.ExcelFile(file_path)
 df_batting = pd.read_excel(xls, sheet_name="打撃", dtype=str)
 df_batting_details = pd.read_excel(xls, sheet_name="打撃詳細", dtype=str)
+df_result = pd.read_excel(xls, sheet_name="打席結果", dtype=str)
+
+df_batting = df_batting.fillna("")
+df_batting_details = df_batting_details.fillna("")
+df_result = df_result.fillna("")
 
 # 順位付けが必要な指標
 rank_columns = ["打率", "出塁率", "OPS", "守備率", "安打", "盗塁", "本塁打", "打点"]
@@ -31,15 +36,21 @@ df_batting_details.update(ranking_df)
 # DataFrameをJSONに変換（数値を文字列として維持）
 batting_json = df_batting.to_dict(orient="records")
 batting_details_json = df_batting_details.to_dict(orient="records")
+batting_result_json = df_result.to_dict(orient="records")
+
 
 # JSONファイルとして保存
 batting_json_path = "batting_data.json"
 batting_details_json_path = "DETAIL_DATA.json"
+batting_result_json_path="at_bat_result.json"
 
 with open(batting_json_path, "w", encoding="utf-8") as f:
     json.dump(batting_json, f, ensure_ascii=False, indent=4)
 
 with open(batting_details_json_path, "w", encoding="utf-8") as f:
     json.dump(batting_details_json, f, ensure_ascii=False, indent=4)
+
+with open(batting_result_json_path, "w", encoding="utf-8") as f:
+    json.dump(batting_result_json, f, ensure_ascii=False, indent=4)
 
 print(f"JSONファイルを保存しました: {batting_json_path}, {batting_details_json_path}")
