@@ -58,7 +58,7 @@
         let sortDirection = {}; // ソート状態を記録
 
         async function loadBattingData() {
-            const response = await fetch('batting_data.json');
+            const response = await fetch('0batting_data.json');
             battingData = await response.json();
             renderTable(battingData);
         }
