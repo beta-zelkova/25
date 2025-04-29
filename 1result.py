@@ -31,4 +31,4 @@ for _, row in df.iterrows():
 with open('0result.json', 'w', encoding='utf-8') as f:
     json.dump(output, f, ensure_ascii=False, indent=2)
 
-print("✅ JSONファイルを出力しました：output.json")
+print("✅ 0result.json完了")

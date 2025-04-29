@@ -24,6 +24,11 @@
             overflow-x: auto; /* 横スクロール可能に */
             max-width: 100%;
         }
+        .opponent {
+            font-size: 0.8em;
+            white-space: nowrap;
+        }
+
         table {
             border-collapse: collapse;
             width: 100%;
@@ -46,90 +51,113 @@
             }
         }
         #stats {
-            margin-bottom: 20px; /* 下部に20pxのマージンを追加 */}
+            margin-bottom: 20px; /* 下部に20pxのマージンを追加 */
+        }
+        .link-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .link-container a {
+            text-decoration: none;
+            color: #007BFF;
+            font-weight: bold;
+        }
+        .link-container a:hover {
+            text-decoration: underline;
+        }
     </style>
-   <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        // 成績表示
-        fetch('DETAIL_DATA.json')
-            .then(response => response.json())
-            .then(data => {
-                const playerName = "中井";
-                const player = data.find(p => p["打者"] === playerName);
-                if (player) {
-                    delete player["打者"];
-                    const stats = Object.entries(player);
-                    let tableHTML = `<table><tr><th colspan="4">${playerName}の成績</th></tr>`;
-                    for (let i = 0; i < stats.length; i += 4) {
-                        tableHTML += "<tr>";
-                        for (let j = 0; j < 4; j++) {
-                            if (i + j < stats.length) {
-                                let key = stats[i + j][0];
-                                let value = stats[i + j][1];
-                                tableHTML += `<td>${key}</td><td>${value}</td>`;
-                            } else {
-                                tableHTML += `<td></td><td></td>`;
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // 成績表示
+            fetch('0DETAIL_DATA.json')
+                .then(response => response.json())
+                .then(data => {
+                    const playerName = "中井";
+                    const player = data.find(p => p["打者"] === playerName);
+                    if (player) {
+                        delete player["打者"];
+                        const stats = Object.entries(player);
+                        let tableHTML = `<table><tr><th colspan="4">${playerName}の成績</th></tr>`;
+                        for (let i = 0; i < stats.length; i += 4) {
+                            tableHTML += "<tr>";
+                            for (let j = 0; j < 4; j++) {
+                                if (i + j < stats.length) {
+                                    let key = stats[i + j][0];
+                                    let value = stats[i + j][1];
+                                    tableHTML += `<td>${key}</td><td>${value}</td>`;
+                                } else {
+                                    tableHTML += `<td></td><td></td>`;
+                                }
                             }
+                            tableHTML += "</tr>";
                         }
-                        tableHTML += "</tr>";
+                        tableHTML += `</table>`;
+                        document.getElementById("stats").innerHTML = `<div class="table-container">${tableHTML}</div>`;
+                    } else {
+                        document.getElementById("stats").innerHTML = "<p>データが見つかりません</p>";
                     }
-                    tableHTML += `</table>`;
-                    document.getElementById("stats").innerHTML = `<div class="table-container">${tableHTML}</div>`;
-                } else {
-                    document.getElementById("stats").innerHTML = "<p>データが見つかりません</p>";
-                }
-            });
-
-        // 打席とポジション表示
-        fetch('at_bat_result.json')
-            .then(response => response.json())
-            .then(data => {
-                const rows = data.filter(entry => entry["選手名"] === "中井");
-                if (rows.length === 0) {
-                    document.getElementById("atbat-table").innerHTML = "<p>打席データが見つかりません</p>";
-                    return;
-                }
-
-                let tableHTML = `
-                    <table>
-                        <tr>
-                            <th>対戦相手</th>
-                            <th>第１打席</th>
-                            <th>第２打席</th>
-                            <th>第３打席</th>
-                            <th>第４打席</th>
-                            <th>第５打席</th>
-                            <th>ポジション</th>
-                        </tr>`;
-
-                rows.forEach(row => {
-                    tableHTML += `
-                        <tr>
-                            <td>${row["対戦相手"]}</td>
-                            <td>${row["第１打席"]}</td>
-                            <td>${row["第２打席"]}</td>
-                            <td>${row["第３打席"]}</td>
-                            <td>${row["第４打席"]}</td>
-                            <td>${row["第５打席"]}</td>
-                            <td>${row["ポジション"]}</td>
-                        </tr>`;
                 });
 
-                tableHTML += "</table>";
-                document.getElementById("atbat-table").innerHTML = `<div class="table-container">${tableHTML}</div>`;
-            })
-            .catch(error => {
-                document.getElementById("atbat-table").innerHTML = "<p>打席データの読み込みに失敗しました</p>";
-                console.error(error);
-            });
-    });
-</script>
+            // 打席とポジション表示
+            fetch('0result.json')
+                .then(response => response.json())
+                .then(data => {
+                    const rows = data.filter(entry => entry["選手名"] === "中井");
+                    if (rows.length === 0) {
+                        document.getElementById("atbat-table").innerHTML = "<p>打席データが見つかりません</p>";
+                        return;
+                    }
+
+                    let tableHTML = `
+                        <table>
+                            <tr>
+                                <th>対戦相手</th>
+                                <th>第１打席</th>
+                                <th>第２打席</th>
+                                <th>第３打席</th>
+                                <th>第４打席</th>
+                                <th>第５打席</th>
+                                <th>第６打席</th>
+                                <th>ポジション</th>
+                            </tr>`;
+
+                    rows.forEach(row => {
+                        const atBats = row["打席結果"];
+                        const positions = row["守備位置"];
+
+                        const paddedAtBats = [...atBats];
+                        while (paddedAtBats.length < 6) {
+                            paddedAtBats.push("");
+                        }
+
+                        tableHTML += `
+                            <tr>
+                                <td class="opponent">${row["対戦相手"]}</td>
+                                <td>${atBats[0] || ""}</td>
+                                <td>${atBats[1] || ""}</td>
+                                <td>${atBats[2] || ""}</td>
+                                <td>${atBats[3] || ""}</td>
+                                <td>${atBats[4] || ""}</td>
+                                <td>${atBats[5] || ""}</td>
+                                <td>${positions.join(", ")}</td>
+                            </tr>`;
+                    });
+
+                    tableHTML += "</table>";
+                    document.getElementById("atbat-table").innerHTML = `<div class="table-container">${tableHTML}</div>`;
+                })
+                .catch(error => {
+                    document.getElementById("atbat-table").innerHTML = "<p>打席データの読み込みに失敗しました</p>";
+                    console.error(error);
+                });
+        });
+    </script>
 </head>
 <body>
 <h1>中井恵樹　2025年度打撃成績</h1>
 <div id="stats"></div>
-
 <div id="atbat-table"></div>
+
 <!-- 元のページに戻るリンク -->
 <div class="link-container">
     <a href="https://beta-zelkova.github.io/25/25.html" target="_self">成績一覧のページへ</a>
