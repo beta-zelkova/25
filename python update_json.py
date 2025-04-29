@@ -1,90 +1,97 @@
-import pandas as pd # type: ignore
+import pandas as pd
 import json
 
 # ファイルパス
 file_path = "成績表.xlsx"
 
-# Excelファイルを読み込む（すべての値を文字列として扱う）
+# Excelファイル読み込み
 xls = pd.ExcelFile(file_path)
-df_batting = pd.read_excel(xls, sheet_name="打撃", dtype=str)
+
+# シート読み込み
 df_batting_details = pd.read_excel(xls, sheet_name="打撃詳細", dtype=str)
-df_result = pd.read_excel(xls, sheet_name="打席結果", dtype=str)
+df_original = pd.read_excel(xls, sheet_name=0, dtype=str)  # 元データ（1枚目）
 
-df_batting = df_batting.fillna("")
 df_batting_details = df_batting_details.fillna("")
-df_result = df_result.fillna("")
+df_original = df_original.fillna("")
 
-# 順位付けが必要な指標
+# 順位をつける指標
 rank_columns = ["打率", "出塁率", "OPS", "守備率", "安打", "盗塁", "本塁打", "打点"]
 
-# 順位付けの対象者（全体を除外）
 ranking_df = df_batting_details[df_batting_details["打者"] != "全体"].copy()
 
-# 順位付け処理
+# 順位付け関数
 def rank_column(df, column):
-    df["rank"] = df[column].astype(float).rank(method="min", ascending=False).astype(int)
-    df[column] = df[column] + " (" + df["rank"].astype(str) + ")"
-    df.drop(columns=["rank"], inplace=True)
+    df_valid = df[df[column].str.strip() != ""].copy()
+    df_valid["rank"] = df_valid[column].astype(float).rank(method="min", ascending=False).astype(int)
+    df_valid[column] = df_valid[column] + " (" + df_valid["rank"].astype(str) + ")"
+    df.update(df_valid)
     return df
 
+# 各項目に順位付け
 for col in rank_columns:
     ranking_df = rank_column(ranking_df, col)
 
-
-
-# 元データに反映
+# 順位付きデータを元のdfに反映
 df_batting_details.update(ranking_df)
 
-# DataFrameをJSONに変換（数値を文字列として維持）
-batting_json = df_batting.to_dict(orient="records")
-batting_details_json = df_batting_details.to_dict(orient="records")
-batting_result_json = df_result.to_dict(orient="records")
+# ➤ DETAIL_DATA.json（順位付き）
+detail_json = df_batting_details.to_dict(orient="records")
+with open("DETAIL_DATA.json", "w", encoding="utf-8") as f:
+    json.dump(detail_json, f, ensure_ascii=False, indent=4)
 
+# ➤ batting_data.json（順位なし：数値のみ）
+batting_columns = [
+    "打者", "試合", "打席", "打数", "安打", "二塁打", "三塁打", "本塁打",
+    "塁打", "打点", "得点", "三振", "四球", "死球", "犠打", "犠飛",
+    "盗塁", "盗塁刺", "併殺", "打率", "出塁率", "長打率", "OPS"
+]
 
-# JSONファイルとして保存
-batting_json_path = "batting_data.json"
-batting_details_json_path = "DETAIL_DATA.json"
-batting_result_json_path="at_bat_result.json"
+df_batting_no_rank = df_batting_details.copy()
+for col in rank_columns:
+    if col in df_batting_no_rank.columns:
+        df_batting_no_rank[col] = df_batting_no_rank[col].str.extract(r"([\d\.]+)").fillna("").astype(str)
 
-with open(batting_json_path, "w", encoding="utf-8") as f:
+available_columns = [col for col in batting_columns if col in df_batting_no_rank.columns]
+df_batting_from_details = df_batting_no_rank[available_columns].copy()
+
+batting_json = df_batting_from_details.to_dict(orient="records")
+with open("batting_data.json", "w", encoding="utf-8") as f:
     json.dump(batting_json, f, ensure_ascii=False, indent=4)
 
-with open(batting_details_json_path, "w", encoding="utf-8") as f:
-    json.dump(batting_details_json, f, ensure_ascii=False, indent=4)
+# ➤ at_bat_result.json（元データのA～D列＋AE～AJ列 → インデックスで 0–3 + 30–35）
+at_bat_indices = list(range(0, 4)) + list(range(30, 36))
+max_col = len(df_original.columns)
+valid_indices = [i for i in at_bat_indices if i < max_col]
+selected_columns = df_original.columns[valid_indices]
 
-with open(batting_result_json_path, "w", encoding="utf-8") as f:
+df_result = df_original[selected_columns].copy().fillna("")
+
+batting_result_json = df_result.to_dict(orient="records")
+with open("at_bat_result.json", "w", encoding="utf-8") as f:
     json.dump(batting_result_json, f, ensure_ascii=False, indent=4)
 
-print(f"JSONファイルを保存しました: {batting_json_path}, {batting_details_json_path}")
-
-# 上位N人を抽出する関数（同率順位を考慮し、降順にソート）
+# ➤ top_3_batting_simple.json（上位3人）
 def extract_top_n_simple(df, columns, n=3):
     top_n_data = {}
     for col in columns:
-        # 数値に変換してソート
-        df[col] = df[col].str.extract(r"([\d\.]+)").astype(float)
-        df["rank"] = df[col].rank(method="min", ascending=False)  # 順位を計算
-        top_n = df[df["rank"] <= n][["打者", col, "rank"]]  # 指定順位以内を抽出
+        df_valid = df[df[col].str.strip() != ""].copy()
+        df_valid[col] = df_valid[col].str.extract(r"([\d\.]+)").astype(float)
+        df_valid["rank"] = df_valid[col].rank(method="min", ascending=False)
+        top_n = df_valid[df_valid["rank"] <= n][["打者", col, "rank"]]
 
-        # 指標ごとにフォーマットを適用
         if col in ["打率", "出塁率", "OPS"]:
-            top_n[col] = top_n[col].apply(lambda x: f"{x:.3f}")  # 小数点以下第三位まで
+            top_n[col] = top_n[col].apply(lambda x: f"{x:.3f}")
         elif col == "守備率":
-            top_n[col] = top_n[col].apply(lambda x: f"{int(x * 100)}%")  # パーセンテージ表記（小数不要）
+            top_n[col] = top_n[col].apply(lambda x: f"{int(x * 100)}%")
         else:
-            top_n[col] = top_n[col].astype(int).astype(str)  # 整数表記
+            top_n[col] = top_n[col].astype(int).astype(str)
 
-        # rank列を削除し、降順にソート
-        top_n = top_n.drop(columns=["rank"]).sort_values(by=col, ascending=False)  # 指標値で降順ソート
-        top_n_data[col] = top_n.to_dict(orient="records")  # 指標ごとに辞書形式で保存
+        top_n = top_n.drop(columns=["rank"]).sort_values(by=col, ascending=False)
+        top_n_data[col] = top_n.to_dict(orient="records")
     return top_n_data
 
-# 上位N人を抽出（簡易形式）
-top_3_simple = extract_top_n_simple(ranking_df, rank_columns, n=3)
-
-# JSONファイルとして保存
-top_3_simple_json_path = "top_3_batting_simple.json"
-with open(top_3_simple_json_path, "w", encoding="utf-8") as f:
+top_3_simple = extract_top_n_simple(ranking_df.copy(), rank_columns, n=3)
+with open("top_3_batting_simple.json", "w", encoding="utf-8") as f:
     json.dump(top_3_simple, f, ensure_ascii=False, indent=4)
 
-print(f"上位3人の簡易データを保存しました: {top_3_simple_json_path}")
+print("✅ すべてのJSONファイルを正常に保存しました（打席結果は元データから抽出）")
