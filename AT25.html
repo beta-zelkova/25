@@ -24,6 +24,11 @@
             overflow-x: auto; /* 横スクロール可能に */
             max-width: 100%;
         }
+        .opponent {
+            font-size: 0.8em;
+            white-space: nowrap;
+        }
+
         table {
             border-collapse: collapse;
             width: 100%;
@@ -120,9 +125,14 @@
                         const atBats = row["打席結果"];
                         const positions = row["守備位置"];
 
+                        const paddedAtBats = [...atBats];
+                        while (paddedAtBats.length < 6) {
+                            paddedAtBats.push("");
+                        }
+
                         tableHTML += `
                             <tr>
-                                <td>${row["対戦相手"]}</td>
+                                <td class="opponent">${row["対戦相手"]}</td>
                                 <td>${atBats[0] || ""}</td>
                                 <td>${atBats[1] || ""}</td>
                                 <td>${atBats[2] || ""}</td>
@@ -142,7 +152,7 @@
     </script>
 </head>
 <body>
-<h1>安部剛　2025年度打撃成績</h1>
+<h1>安部(剛)　2025年度打撃成績</h1>
 <div id="stats"></div>
 <div id="atbat-table"></div>
 
