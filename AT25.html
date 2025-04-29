@@ -99,7 +99,7 @@
                 });
 
             // 打席とポジション表示
-            fetch('at_bat_result.json')
+            fetch('0result.json')
                 .then(response => response.json())
                 .then(data => {
                     const rows = data.filter(entry => entry["選手名"] === "安部剛");
