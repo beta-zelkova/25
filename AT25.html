@@ -21,14 +21,13 @@
         }
         .table-container {
             width: 100%;
-            overflow-x: auto; /* 横スクロール可能に */
+            overflow-x: auto;
             max-width: 100%;
         }
         .opponent {
             font-size: 0.8em;
             white-space: nowrap;
         }
-
         table {
             border-collapse: collapse;
             width: 100%;
@@ -51,7 +50,7 @@
             }
         }
         #stats {
-            margin-bottom: 20px; /* 下部に20pxのマージンを追加 */
+            margin-bottom: 20px;
         }
         .link-container {
             margin-top: 20px;
@@ -64,6 +63,18 @@
         }
         .link-container a:hover {
             text-decoration: underline;
+        }
+
+        /* 追加スタイル */
+        .hit {
+            color: red;
+        }
+        .homerun {
+            color: red;
+            font-weight: bold;
+        }
+        .walk {
+            color: blue;
         }
     </style>
     <script>
@@ -130,17 +141,21 @@
                             paddedAtBats.push("");
                         }
 
-                        tableHTML += `
-                            <tr>
-                                <td class="opponent">${row["対戦相手"]}</td>
-                                <td>${atBats[0] || ""}</td>
-                                <td>${atBats[1] || ""}</td>
-                                <td>${atBats[2] || ""}</td>
-                                <td>${atBats[3] || ""}</td>
-                                <td>${atBats[4] || ""}</td>
-                                <td>${atBats[5] || ""}</td>
-                                <td>${positions.join(", ")}</td>
-                            </tr>`;
+                        tableHTML += `<tr><td class="opponent">${row["対戦相手"]}</td>`;
+
+                        paddedAtBats.forEach(result => {
+                            let cls = "";
+                            if (/本/.test(result)) {
+                                cls = "homerun";
+                            } else if (/安|二|三/.test(result)) {
+                                cls = "hit";
+                            } else if (/四|死/.test(result)) {
+                                cls = "walk";
+                            }
+                            tableHTML += `<td class="${cls}">${result}</td>`;
+                        });
+
+                        tableHTML += `<td>${positions.join(", ")}</td></tr>`;
                     });
 
                     tableHTML += "</table>";
