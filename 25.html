@@ -8,21 +8,21 @@
         body { margin: 0; padding: 0; font-family: Arial, sans-serif; }
         .table-container {
             width: 100%;
-            max-height: 400px; /* 表の最大高さを設定 */
-            overflow-y: auto; /* 縦スクロールを有効化 */
+            max-height: 400px;
+            overflow-y: auto;
             border: 1px solid #ccc;
         }
         table { width: 100%; border-collapse: collapse; }
         th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
         th {
             background-color: #f4f4f4;
-            position: sticky; /* ヘッダー行を固定 */
-            top: 0; /* 上部に固定 */
-            z-index: 1; /* ヘッダーを前面に表示 */
+            position: sticky;
+            top: 0;
+            z-index: 1;
         }
         th.sortable:hover { background-color: #ddd; }
-        .asc::after { content: " \25B2"; } /* ▲ */
-        .desc::after { content: " \25BC"; } /* ▼ */
+        .asc::after { content: " \25B2"; }
+        .desc::after { content: " \25BC"; }
         .link-container {
             margin: 20px 0;
             text-align: center;
@@ -48,14 +48,13 @@
         </table>
     </div>
 
-    <!-- リンクを埋め込み -->
     <div class="link-container">
         <a href="https://beta-zelkova.github.io/25/ranking.html" target="_blank">ランキングページを見る</a>
     </div>
 
     <script>
         let battingData = [];
-        let sortDirection = {}; // ソート状態を記録
+        let sortDirection = {};
 
         async function loadBattingData() {
             const response = await fetch('0batting_data.json');
@@ -68,7 +67,7 @@
             const tableBody = document.getElementById('tableBody');
             tableHeader.innerHTML = "";
             tableBody.innerHTML = "";
-            
+
             const headers = Object.keys(data[0]);
             headers.forEach(header => {
                 let th = document.createElement('th');
@@ -80,20 +79,16 @@
                 }
                 tableHeader.appendChild(th);
             });
-            
+
             data.forEach(row => {
                 let tr = document.createElement('tr');
                 headers.forEach(header => {
                     let td = document.createElement('td');
-                    const links = { "安部滉":"AH25.html","中井":"NK25.html","野場":"NS25.html","池澤":"IK22.html",
-                    "安部剛": "AT25.html","大鐘":"OK25.html","北久保":"KC25.html", "萩原": "HI25.html" ,
-                    "岩本":"IK25.html","上小城":"KS25.html","反町":"SH25.html",
-                    "NAKAHATA":"GN25.html","HENRY":"WH25.html","加本":"KY25.html","佐伯":"SK25.html","新畑":"SY25.html"}
-                    if (header === '打者' && links[row[header]]) {
+                    if (header === '打者') {
                         const playerLink = document.createElement('a');
-                        playerLink.href = `https://beta-zelkova.github.io/25/${links[row[header]]}`;
+                        playerLink.href = `https://beta-zelkova.github.io/25/All.html?player=${encodeURIComponent(row[header])}`;
                         playerLink.textContent = row[header];
-                        playerLink.target = '_blank';
+                        playerLink.target = '_self';
                         td.appendChild(playerLink);
                     } else {
                         td.textContent = row[header];
@@ -107,7 +102,7 @@
         function sortTable(column) {
             const isNumeric = !isNaN(parseFloat(battingData[0][column]));
             const direction = sortDirection[column] === 'asc' ? 'desc' : 'asc';
-            
+
             battingData.sort((a, b) => {
                 let valA = isNumeric ? parseFloat(a[column]) : a[column];
                 let valB = isNumeric ? parseFloat(b[column]) : b[column];
@@ -115,12 +110,12 @@
                 if (valA > valB) return direction === 'desc' ? 1 : -1;
                 return 0;
             });
-            
-            sortDirection = {}; // すべてのソート状態をリセット
+
+            sortDirection = {};
             sortDirection[column] = direction;
             renderTable(battingData);
         }
-        
+
         loadBattingData();
     </script>
 </body>
