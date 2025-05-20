@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>選手別打撃成績</title>
+    <style>
+        /* === 以下、AT25.htmlのCSSをそのまま使用 === */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        h1 {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            max-width: 100%;
+        }
+        .opponent {
+            font-size: 0.8em;
+            white-space: nowrap;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            font-size: 1em;
+        }
+        th, td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: center;
+        }
+        @media (max-width: 600px) {
+            table {
+                font-size: 0.9em;
+                width: 100%;
+            }
+            th, td {
+                padding: 6px;
+            }
+        }
+        #stats {
+            margin-bottom: 20px;
+        }
+        .link-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .link-container a {
+            text-decoration: none;
+            color: #007BFF;
+            font-weight: bold;
+        }
+        .link-container a:hover {
+            text-decoration: underline;
+        }
+        .hit { color: red; }
+        .homerun { color: red; font-weight: bold; }
+        .walk { color: blue; }
+    </style>
+</head>
+<body>
+<h1>2025年度 選手別打撃成績</h1>
+
+<select id="player-select">
+    <option value="萩原">萩原郁将</option>
+    <option value="安部剛">安部剛</option>
+    <!-- 他の選手も追加 -->
+</select>
+
+<div id="stats"></div>
+<div id="atbat-table"></div>
+
+<div class="link-container">
+    <a href="https://beta-zelkova.github.io/25/25.html">成績一覧のページへ</a>
+</div>
+
+<script>
+    let detailData = [];
+    let resultData = [];
+
+    async function loadData() {
+        [detailData, resultData] = await Promise.all([
+            fetch('0DETAIL_DATA.json').then(r => r.json()),
+            fetch('0result.json').then(r => r.json())
+        ]);
+        updateDisplay(document.getElementById("player-select").value);
+    }
+
+    function updateDisplay(playerName) {
+        // 成績表
+        const player = detailData.find(p => p["打者"] === playerName);
+        if (player) {
+            const stats = Object.entries({...player});
+            delete stats["打者"];
+            let tableHTML = `<table><tr><th colspan="4">${playerName}の成績</th></tr>`;
+            for (let i = 0; i < stats.length; i += 4) {
+                tableHTML += "<tr>";
+                for (let j = 0; j < 4; j++) {
+                    if (i + j < stats.length) {
+                        let key = stats[i + j][0];
+                        let value = stats[i + j][1];
+                        tableHTML += `<td>${key}</td><td>${value}</td>`;
+                    } else {
+                        tableHTML += `<td></td><td></td>`;
+                    }
+                }
+                tableHTML += "</tr>";
+            }
+            tableHTML += `</table>`;
+            document.getElementById("stats").innerHTML = `<div class="table-container">${tableHTML}</div>`;
+        } else {
+            document.getElementById("stats").innerHTML = "<p>成績が見つかりません</p>";
+        }
+
+        // 打席表
+        const rows = resultData.filter(entry => entry["選手名"] === playerName);
+        if (rows.length === 0) {
+            document.getElementById("atbat-table").innerHTML = "<p>打席データが見つかりません</p>";
+            return;
+        }
+
+        let tableHTML = `
+            <table>
+                <tr>
+                    <th>対戦相手</th>
+                    <th>第１打席</th>
+                    <th>第２打席</th>
+                    <th>第３打席</th>
+                    <th>第４打席</th>
+                    <th>第５打席</th>
+                    <th>第６打席</th>
+                    <th>ポジション</th>
+                </tr>`;
+
+        rows.forEach(row => {
+            const padded = [...row["打席結果"]];
+            while (padded.length < 6) padded.push("");
+            tableHTML += `<tr><td class="opponent">${row["対戦相手"]}</td>`;
+            padded.forEach(result => {
+                let cls = "";
+                if (/本/.test(result)) cls = "homerun";
+                else if (/安|二|三/.test(result)) cls = "hit";
+                else if (/四|死/.test(result)) cls = "walk";
+                tableHTML += `<td class="${cls}">${result}</td>`;
+            });
+            tableHTML += `<td>${row["守備位置"].join(", ")}</td></tr>`;
+        });
+
+        tableHTML += "</table>";
+        document.getElementById("atbat-table").innerHTML = `<div class="table-container">${tableHTML}</div>`;
+    }
+
+    document.getElementById("player-select").addEventListener("change", function () {
+        updateDisplay(this.value);
+    });
+
+    document.addEventListener("DOMContentLoaded", loadData);
+</script>
+</body>
+</html>
