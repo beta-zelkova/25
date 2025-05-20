@@ -41,6 +41,12 @@
             padding: 8px;
             text-align: center;
         }
+        #player-select {
+        font-size: 1.1em;
+        padding: 8px 12px;
+        width: 250px;
+        max-width: 90vw;
+    }
         @media (max-width: 600px) {
             table {
                 font-size: 0.9em;
@@ -74,14 +80,14 @@
 <h1>2025年度 選手別打撃成績</h1>
 
 <select id="player-select">
-    <option value="萩原">萩原郁将</option>
-    <option value="安部剛">安部剛</option>
     <option value="安部滉">安部滉</option>
     <option value="中井">中井</option>
     <option value="野場">野場</option>
     <option value="池澤">池澤</option>
+    <option value="安部剛">安部剛</option>
     <option value="大鐘">大鐘</option>
     <option value="北久保">北久保</option>
+    <option value="萩原">萩原郁将</option>
     <option value="岩本">岩本</option>
     <option value="上小城">上小城</option>
     <option value="反町">反町</option>
@@ -119,8 +125,7 @@
     function updateDisplay(playerName) {
         const player = detailData.find(p => p["打者"] === playerName);
         if (player) {
-            const stats = Object.entries({...player});
-            delete stats["打者"];
+            const stats = Object.entries(player).filter(([key, _]) => key !== "打者");
             let tableHTML = `<table><tr><th colspan="4">${playerName}の成績</th></tr>`;
             for (let i = 0; i < stats.length; i += 4) {
                 tableHTML += "<tr>";
@@ -158,7 +163,7 @@
             padded.forEach(result => {
                 let cls = "";
                 if (/本/.test(result)) cls = "homerun";
-                else if (/安|二|三/.test(result)) cls = "hit";
+                else if (/安$|二$|三$/.test(result)) cls = "hit";
                 else if (/四|死/.test(result)) cls = "walk";
                 tableHTML += `<td class="${cls}">${result}</td>`;
             });
