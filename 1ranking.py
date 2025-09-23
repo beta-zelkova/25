@@ -1,6 +1,9 @@
 import pandas as pd
 import json
 
+# ユーザー入力で最低打席数を取得
+min_plate_appearances = int(input("最低打席数を入力してください: "))
+
 file_path = "成績表.xlsx"
 xls = pd.ExcelFile(file_path)
 
@@ -10,9 +13,17 @@ df_original = pd.read_excel(xls, sheet_name=0, dtype=str)  # 元データ（1枚
 df_batting_details = df_batting_details.fillna("")
 df_original = df_original.fillna("")
 
+# 打席数を数値に変換
+df_batting_details["打席"] = pd.to_numeric(df_batting_details["打席"], errors="coerce")
+
 # 順位をつける指標
 rank_columns = ["打率", "出塁率", "OPS", "守備率", "安打", "盗塁", "本塁打", "打点"]
-ranking_df = df_batting_details[df_batting_details["打者"] != "全体"].copy()
+
+# 「全体」以外かつ最低打席数以上の選手に限定
+ranking_df = df_batting_details[
+    (df_batting_details["打者"] != "全体") &
+    (df_batting_details["打席"] >= min_plate_appearances)
+].copy()
 
 # 順位付け関数
 def rank_column(df, column):
@@ -27,7 +38,9 @@ for col in rank_columns:
     ranking_df = rank_column(ranking_df, col)
 
 # 順位付きデータを元のdfに反映
-df_batting_details.update(ranking_df)# ➤ top_3_batting_simple.json（上位3人）
+df_batting_details.update(ranking_df)
+
+# 上位n人のデータを抽出
 def extract_top_n_simple(df, columns, n=3):
     top_n_data = {}
     for col in columns:
@@ -47,7 +60,10 @@ def extract_top_n_simple(df, columns, n=3):
         top_n_data[col] = top_n.to_dict(orient="records")
     return top_n_data
 
+# 上位3人を抽出
 top_3_simple = extract_top_n_simple(ranking_df.copy(), rank_columns, n=3)
+
+# JSON出力
 with open("0ranking.json", "w", encoding="utf-8") as f:
     json.dump(top_3_simple, f, ensure_ascii=False, indent=4)
 
