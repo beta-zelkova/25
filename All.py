@@ -73,19 +73,19 @@ print("ranking完成")
 # ➤ 元データの打席結果などをJSON化
 output = []
 for _, row in df_gendata.iterrows():
-    opponent = row.iloc[0]             # A列：対戦相手
-    position1 = row.iloc[2]            # C列：守備位置1
-    position2 = row.iloc[3]            # D列：守備位置2
+    opponent = row.iloc[1]             # A列：対戦相手
+    position1 = row.iloc[3]            # C列：守備位置1
+    position2 = row.iloc[4]            # D列：守備位置2
     position3 = row.iloc[36]
-    player = row.iloc[29]              # AD列：選手名
-    atbats = row.iloc[30:35]           # AE〜AJ列：打席結果
+    player = row.iloc[5]              # AD列：選手名
+    atbats = row.iloc[30:36]           # AE〜AJ列：打席結果
 
     if pd.isna(player):
         continue
 
     data = {
         "対戦相手": opponent if not pd.isna(opponent) else "",
-        "守備位置": [p for p in [position1, position2, position3] if not pd.isna(p)],
+        "守備位置": [p for p in [position1, position2,position3] if not pd.isna(p)],
         "選手名": player,
         "打席結果": [res for res in atbats if not pd.isna(res)]
     }
@@ -125,7 +125,7 @@ with open("0batting_data.json", "w", encoding="utf-8") as f:
     json.dump(batting_json, f, ensure_ascii=False, indent=4)
 
 # ➤ at_bat_result.json（元データのA～D列＋AE～AJ列 → インデックスで 0–3 + 30–35）
-at_bat_indices = list(range(0, 4)) + list(range(30, 36))
+at_bat_indices = list(range(0, 4)) + list(range(30, 35))
 max_col = len(df_original_5.columns)
 valid_indices = [i for i in at_bat_indices if i < max_col]
 selected_columns = df_original_5.columns[valid_indices]
